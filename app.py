@@ -9,10 +9,10 @@ app = Flask(__name__)
 @app.route("/", methods=["GET","POST"])
 def hackom():
     if request.method == "POST":
-        results = hakom.operator(request.form.get("msisdn"))
-        # return make_response(jsonify(operator), 200)
-        return render_template("mnp_results.html", results = results)
-
+        msisdn = request.form.get("msisdn")
+        if len(msisdn) >= 10:
+            results = hakom.operator(msisdn)
+            return render_template("mnp_results.html", results = results)
     else:
         return render_template("mnp.html")
 
