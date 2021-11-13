@@ -14,7 +14,7 @@ def ocr():
     dataset = (
         dataset.map(m.encode_single_sample,
                     num_parallel_calls=tf.data.AUTOTUNE)
-        .batch(16)  # batch size
+        .batch(1)  # batch size
         .prefetch(buffer_size=tf.data.AUTOTUNE)
     )
 
