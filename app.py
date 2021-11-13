@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request
 import hakom
-# from flask_sslify import SSLify
+from flask_sslify import SSLify
 
 app = Flask(__name__)
-# sslify = SSLify(app)
+sslify = SSLify(app)
 
 
 @app.route("/", methods=["GET","POST"])
