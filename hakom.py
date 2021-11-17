@@ -1,6 +1,7 @@
 import requests
 from requests.exceptions import ConnectionError
 from bs4 import BeautifulSoup
+import json
 from time import sleep
 import tensorflow as tf
 import model as m
@@ -22,6 +23,9 @@ def ocr():
     out = m.decode_batch_predictions(out, 6)  # max length = 6
 
     return out[0]
+
+
+    
 
 # phone_number = "385956363898"
 
@@ -77,3 +81,23 @@ def operator(phone_number: str):
     except Exception as e:
         return [{"Success": False, "Reason": e}]
 
+def batch_operator(phone_numbers: str):
+    phone_numbers = json.loads("[" + phone_numbers + "]")
+    preneseno = open('preneseno.json',"r")
+    preneseno = json.load(preneseno)
+    results = [] 
+    for i in phone_numbers:
+        if i not in preneseno:
+            res = operator(i)
+            if res[0]["Status"] == "Broj je prenesen":
+                preneseno.append(int(res[0]["Broj"]))
+                continue
+            else:
+                results.append(res[0])
+    
+    with open("preneseno.json","w") as f:
+        json.dump(preneseno,f)
+
+    return results
+
+    

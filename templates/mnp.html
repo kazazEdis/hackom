@@ -7,7 +7,12 @@
 {% block content %}
 <form autocomplete="off" method="POST">
     <input type="text" name="msisdn" value="385">
+    <br>
     <input type="submit" value="Search">
+    <input type="checkbox" name="batch">
+    <label for="batch">Batch</label>
+    <br>
 </form>
 {% block results %}{% endblock %}
+<script defer src="{{ url_for('static', filename='js/mnp.js') }}"></script>
 {% endblock %}
