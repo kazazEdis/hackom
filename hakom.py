@@ -85,15 +85,22 @@ def batch_operator(phone_numbers: str):
     phone_numbers = json.loads("[" + phone_numbers + "]")
     preneseno = open('preneseno.json',"r")
     preneseno = json.load(preneseno)
+    telemach = "Telemach Hrvatska d.o.o."
+    completed = "Broj je prenesen"
+    gave_up = "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa"
+    in_process = "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa"
+    accepted = "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa"
+
     results = [] 
     for i in phone_numbers:
         if i not in preneseno:
-            res = operator(i)
-            if res[0]["Status"] == "Broj je prenesen":
-                preneseno.append(int(res[0]["Broj"]))
-                continue
+            res = operator(i)[0]
+            status = res["Status"]
+            if status == completed and status == telemach or status == gave_up or status == accepted:
+                preneseno.append(int(res["Broj"]))
             else:
-                results.append(res[0])
+                if res["Status"] != in_process:
+                    results.append(res)
     
     with open("preneseno.json","w") as f:
         json.dump(preneseno,f)

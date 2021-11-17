@@ -13,7 +13,6 @@ def hackom():
     if request.method == "POST":
         msisdn = request.form.get("msisdn")
         if batch != None:
-            print(type(msisdn))
             results = hakom.batch_operator(msisdn)
             return render_template("mnp_results.html", results = results)
 

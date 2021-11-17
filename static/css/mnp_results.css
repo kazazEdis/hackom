@@ -1,0 +1,17 @@
+table, th, td {
+    border-collapse: collapse;
+}
+#results {
+    border-radius: 80px;
+}
+thead > tr{
+    color: #ffffff;
+    background-color: #6c7ae0 ;
+}
+td {
+    padding: 5px;
+}
+
+tr:nth-child(even) {
+  background-color: #D6EEEE;
+}

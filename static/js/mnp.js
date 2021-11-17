@@ -5,6 +5,8 @@ const msisdn = document.getElementsByName("msisdn");
 let batchBox = document.createElement("textarea");
 batchBox.type = "text";
 batchBox.name = "msisdn";
+batchBox.style.width = "100%";
+batchBox.style.height = "10rem"
 
 let inputBox = document.createElement("input");
 inputBox.type = "text";

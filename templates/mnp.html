@@ -2,8 +2,9 @@
 
 
 {% block title %}MNP{% endblock %}
-
-
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mnp.css') }}">
+{% endblock %}
 {% block content %}
 <form autocomplete="off" method="POST">
     <input type="text" name="msisdn" value="385">
@@ -13,6 +14,7 @@
     <label for="batch">Batch</label>
     <br>
 </form>
+<br>
 {% block results %}{% endblock %}
 <script defer src="{{ url_for('static', filename='js/mnp.js') }}"></script>
 {% endblock %}
