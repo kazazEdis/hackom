@@ -5,6 +5,12 @@ Date created: 2020/06/14
 Last modified: 2020/06/26
 Description: How to implement an OCR model using CNNs, RNNs and CTC loss.
 """
+import edit_distance
+from tensorflow.keras import layers
+from tensorflow import keras
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
 import math
 import string
 from pathlib import Path
@@ -25,14 +31,6 @@ in the developer guides.
 ## Setup
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-
-import edit_distance
 
 # Desired image dimensions
 img_width = 150
@@ -53,7 +51,8 @@ data_dir = Path("./temp_dataset/")
 # images = sorted(list(map(str, list(data_dir.glob("*.jpeg")))))
 # labels = [img.split(os.path.sep)[-1].split(".jpeg")[0] for img in images]
 # characters = sorted(list(set(char for label in labels for char in label)))
-characters=['2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+characters = ['2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+              'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 """
 ## Preprocessing
@@ -78,8 +77,10 @@ def split_data(images, labels, train_size=0.9, shuffle=True):
     # 3. Get the size of training samples
     train_samples = int(size * train_size)
     # 4. Split data into training and validation sets
-    x_train, y_train = images[indices[:train_samples]], labels[indices[:train_samples]]
-    x_valid, y_valid = images[indices[train_samples:]], labels[indices[train_samples:]]
+    x_train, y_train = images[indices[:train_samples]
+                              ], labels[indices[:train_samples]]
+    x_valid, y_valid = images[indices[train_samples:]
+                              ], labels[indices[train_samples:]]
     return x_train, x_valid, y_train, y_valid
 
 
@@ -98,12 +99,11 @@ def encode_single_sample(img_path, label):
     img = tf.transpose(img, perm=[1, 0, 2])
     # 6. Map the characters in label to numbers
     if label is not None:
-        label = char_to_num(tf.strings.unicode_split(label, input_encoding="UTF-8"))
+        label = char_to_num(tf.strings.unicode_split(
+            label, input_encoding="UTF-8"))
         # 7. Return a dict as our model is expecting two inputs
         return {"image": img, "label": label}
     return {"image": img}
-
-
 
 
 """
@@ -115,11 +115,16 @@ class CTCLayer(layers.Layer):
     def __init__(self, name=None):
         super().__init__(name=name)
         self.loss_fn = keras.backend.ctc_batch_cost
-        self.cer_accumulator = self.add_weight(name="total_cer", initializer="zeros", trainable=False)
-        self.wer_accumulator = self.add_weight(name="total_wer", initializer="zeros", trainable=False)
-        self.counter = self.add_weight(name="cer_count", initializer="zeros", trainable=False)
-        self.total = self.add_weight(name='total', initializer='zeros', trainable=False)
-        self.calculator = edit_distance.EditDistanceCalculator(self.cer_accumulator, self.wer_accumulator, self.counter, self.total)
+        self.cer_accumulator = self.add_weight(
+            name="total_cer", initializer="zeros", trainable=False)
+        self.wer_accumulator = self.add_weight(
+            name="total_wer", initializer="zeros", trainable=False)
+        self.counter = self.add_weight(
+            name="cer_count", initializer="zeros", trainable=False)
+        self.total = self.add_weight(
+            name='total', initializer='zeros', trainable=False)
+        self.calculator = edit_distance.EditDistanceCalculator(
+            self.cer_accumulator, self.wer_accumulator, self.counter, self.total)
         self.cer = edit_distance.CERMetric(self.calculator)
         self.wer = edit_distance.WERMetric(self.calculator)
 
@@ -130,8 +135,10 @@ class CTCLayer(layers.Layer):
         input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
         label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
 
-        input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
-        label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+        input_length = input_length * \
+            tf.ones(shape=(batch_len, 1), dtype="int64")
+        label_length = label_length * \
+            tf.ones(shape=(batch_len, 1), dtype="int64")
 
         loss = self.loss_fn(y_true, y_pred, input_length, label_length)
         self.add_loss(loss)
@@ -170,14 +177,17 @@ def build_model():
     # Hence, downsampled feature maps are 4x smaller. The number of
     # filters in the last layer is 64. Reshape accordingly before
     # passing the output to the RNN part of the model
-    new_shape = ((img_width // downsample_factor), (img_height // downsample_factor) * filters)
+    new_shape = ((img_width // downsample_factor),
+                 (img_height // downsample_factor) * filters)
     x = layers.Reshape(target_shape=new_shape, name="reshape")(x)
     x = layers.Dense(64, activation="relu", name="dense1")(x)
     x = layers.Dropout(0.2)(x)
 
     # RNNs
-    x = layers.Bidirectional(layers.GRU(128, return_sequences=True, dropout=0.25))(x)
-    x = layers.Bidirectional(layers.GRU(64, return_sequences=True, dropout=0.25))(x)
+    x = layers.Bidirectional(layers.GRU(
+        128, return_sequences=True, dropout=0.25))(x)
+    x = layers.Bidirectional(layers.GRU(
+        64, return_sequences=True, dropout=0.25))(x)
 
     # Output layer
     x = layers.Dense(
@@ -229,7 +239,8 @@ def show_validation(prediction_model, validation_dataset, max_length):
         if batch_labels is not None:
             orig_texts = []
             for label in batch_labels:
-                label = tf.strings.reduce_join(num_to_char(label)).numpy().decode("utf-8")
+                label = tf.strings.reduce_join(
+                    num_to_char(label)).numpy().decode("utf-8")
                 orig_texts.append(label)
 
         _, ax = plt.subplots(4, 4, figsize=(15, 5))
@@ -237,9 +248,11 @@ def show_validation(prediction_model, validation_dataset, max_length):
             img = (batch_images[i, :, :, 0] * 255).numpy().astype(np.uint8)
             img = img.T
             if batch_labels is not None:
-                real = tf.strings.reduce_join(num_to_char(batch_labels[i])).numpy().decode("utf-8")
+                real = tf.strings.reduce_join(num_to_char(
+                    batch_labels[i])).numpy().decode("utf-8")
                 title = f"Prediction: {pred_texts[i]}\nReal: {real}"
-                ax[i // 4, i % 4].set_title(title, color='green' if pred_texts[i] == real else 'red')
+                ax[i // 4, i %
+                    4].set_title(title, color='green' if pred_texts[i] == real else 'red')
             else:
                 title = f"Prediction: {pred_texts[i]}"
                 ax[i // 4, i % 4].set_title(title)

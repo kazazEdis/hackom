@@ -25,8 +25,6 @@ def ocr():
     return out[0]
 
 
-    
-
 # phone_number = "385956363898"
 
 
@@ -81,9 +79,10 @@ def operator(phone_number: str):
     except Exception as e:
         return [{"Success": False, "Reason": e}]
 
+
 def batch_operator(phone_numbers: str):
     phone_numbers = json.loads("[" + phone_numbers + "]")
-    preneseno = open('preneseno.json',"r")
+    preneseno = open('preneseno.json', "r")
     preneseno = json.load(preneseno)
     telemach = "Telemach Hrvatska d.o.o."
     completed = "Broj je prenesen"
@@ -91,7 +90,7 @@ def batch_operator(phone_numbers: str):
     in_process = "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa"
     accepted = "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa"
 
-    results = [] 
+    results = []
     for i in phone_numbers:
         if i not in preneseno:
             res = operator(i)[0]
@@ -101,10 +100,8 @@ def batch_operator(phone_numbers: str):
             else:
                 if res["Status"] != in_process:
                     results.append(res)
-    
-    with open("preneseno.json","w") as f:
-        json.dump(preneseno,f)
+
+    with open("preneseno.json", "w") as f:
+        json.dump(preneseno, f)
 
     return results
-
-    

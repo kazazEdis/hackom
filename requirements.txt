@@ -8,6 +8,7 @@ charset-normalizer==2.0.7
 click==8.0.3
 cycler==0.11.0
 Flask==2.0.2
+Flask-SSLify==0.1.5
 flatbuffers==2.0
 gast==0.4.0
 google-auth==2.3.3
@@ -49,6 +50,6 @@ tensorflow-io-gcs-filesystem==0.22.0
 termcolor==1.1.0
 typing-extensions==3.10.0.2
 urllib3==1.26.7
+uWSGI==2.0.20
 Werkzeug==2.0.2
 wrapt==1.13.3
-Flask-SSLify==0.1.5
