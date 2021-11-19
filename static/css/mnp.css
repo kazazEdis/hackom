@@ -1,0 +1,40 @@
+#searchBar {
+    background-color: white;
+    border-radius: 12px;
+    margin: 10px;
+    display: block;
+    position: relative;
+    height: 30px;
+    box-sizing: border-box;
+    padding-right: 100px;
+  }
+  
+  #searchBar > input {
+      position: absolute;
+      left: 35px;
+      height: 100%;
+      width: 95%;
+      border: none;
+      background-color: transparent;
+  }
+  
+  #searchBar > input:focus {
+      outline: none !important;
+      border: none
+  } 
+
+  #searchBar > input::placeholder {
+    padding-left: 0%;
+  }
+  
+  #searchBar > button > img {
+      height: inherit;
+      width: inherit;
+  }
+  
+  #searchBar > button {
+    height: 100%;
+    width: 35px;
+    border: none;
+    background-color: transparent;
+  }

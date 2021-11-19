@@ -1,17 +1,31 @@
+table {
+    width: auto;
+    margin: 0 auto;
+  }
+
 table, th, td {
+    border: none;
     border-collapse: collapse;
+    text-align: left;
 }
+
 #results {
     border-radius: 80px;
 }
+
 thead > tr{
     color: #ffffff;
     background-color: #6c7ae0 ;
 }
-td {
-    padding: 5px;
+
+tbody > tr {
+    background-color: #ffffff
 }
 
-tr:nth-child(even) {
-  background-color: #D6EEEE;
+tbody > tr:nth-child(even) {
+    background-color: #D6EEEE;
+  }
+
+td,th {
+    padding: 5px;
 }
