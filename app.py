@@ -11,16 +11,15 @@ app = Flask(__name__)
 def hackom():
     if request.method == "POST":
         msisdn = request.form.get("msisdn")
-        if "," in msisdn:
-            results = hakom.batch_operator(msisdn)
-            return render_template("mnp_results.html", results=results)
 
-        elif len(msisdn) >= 10 and "," not in msisdn:
-            results = hakom.operator(msisdn)
-            return render_template("mnp_results.html", results=results)
+        if len(msisdn) == 0:
+            return render_template("mnp_results.html", results=[{"Success": False, "Reason": "Please enter MSISDN!"}])
+
+        elif "," in msisdn:
+            return render_template("mnp_results.html", results=hakom.batch_operator(msisdn))
 
         else:
-            return render_template("mnp.html")
+            return render_template("mnp_results.html", results=hakom.operator(msisdn))
 
     else:
         return render_template("mnp.html")

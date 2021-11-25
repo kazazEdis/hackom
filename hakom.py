@@ -25,10 +25,20 @@ def ocr():
     return out[0]
 
 
-# phone_number = "385956363898"
+def reformat_phone_number(phone_number: str):
+    phone_number = str(phone_number)
+    while phone_number[0] == "0":
+        phone_number = phone_number.lstrip("0")
+
+    if not phone_number.startswith("385"):
+        phone_number = "385" + phone_number
+
+    return phone_number
 
 
-def operator(phone_number: str):
+def operator(phone_number):
+    phone_number = reformat_phone_number(str(phone_number))
+
     try:
         session = requests.session()
         response = session.get('https://app.hakom.hr/captcha.aspx')
@@ -58,6 +68,10 @@ def operator(phone_number: str):
 
         try:
             results = soup.find_all("td")
+
+            if len(results[0].text) == 0:
+                return [{"Success": False, "Reason": f"Invalid MSISDN: {phone_number} !"}]
+
             results = [{"Success": True, "Operator": results[0].text,
                         "Broj": results[1].text, "Status": results[2].text}]
             return results
@@ -74,7 +88,7 @@ def operator(phone_number: str):
                 return operator(phone_number)
 
     except ConnectionError:
-        return [{"Success": False, "Reason": "ConnectionError. Are you online!"}]
+        return [{"Success": False, "Reason": "ConnectionError. Are you online?"}]
 
     except Exception as e:
         return [{"Success": False, "Reason": e}]
@@ -85,21 +99,31 @@ def batch_operator(phone_numbers: str):
     preneseno = open('preneseno.json', "r")
     preneseno = json.load(preneseno)
     telemach = "Telemach Hrvatska d.o.o."
-    completed = "Broj je prenesen"
-    gave_up = "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa"
-    in_process = "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa"
-    accepted = "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa"
+    statuses = {
+        "completed": "Broj je prenesen",
+        "gave_up": "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa",
+        "in_process": "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa",
+        "accepted": "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa",
+        "not_in_transfer": "Broj nije u postupku prijenosa"
+    }
 
     results = []
     for i in phone_numbers:
         if i not in preneseno:
             res = operator(i)[0]
-            status = res["Status"]
-            if status == completed and status == telemach or status == gave_up or status == accepted:
-                preneseno.append(int(res["Broj"]))
-            else:
-                if res["Status"] != in_process:
+            res_broj = res.get("Broj")
+            res_status = res.get("Status")
+            res_operator = res.get("Operator")
+            if res_operator != None:
+                if res_operator != telemach or res_status == statuses.get("gave_up"):
                     results.append(res)
+
+                else:
+                    preneseno.append(int(res_broj))
+
+            elif res_operator == None:
+                results.append(res)
+
 
     with open("preneseno.json", "w") as f:
         json.dump(preneseno, f)

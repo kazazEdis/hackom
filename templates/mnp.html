@@ -1,18 +1,23 @@
 {% extends 'base.html' %}
 
-
 {% block title %}MNP{% endblock %}
 {% block head %}
 {{ super() }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mnp.css') }}">
+<script defer src="{{ url_for('static', filename='js/mnp.js') }}"></script>
 {% endblock %}
 {% block content %}
-<form autocomplete="off" method="POST" style="height:50px">
-    <section id="searchBar">
-        <button type="submit"><img src="{{ url_for('static', filename='img/search.svg') }}" alt="Search"></button>
-        <input name="msisdn" placeholder="385951001000, 385952002200, 385..."></input>
-    </section>
+{{ super() }}
+<form id="searchBar" autocomplete="off" method="POST">
+    <button type="submit">
+        <i class="fa fa-search"></i>
+    </button>
+    <input name="msisdn" placeholder="MSISDN"></input>
 </form>
+<br>
 {% block results %}{% endblock %}
-<script defer src="{{ url_for('static', filename='js/mnp.js') }}"></script>
 {% endblock %}

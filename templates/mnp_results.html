@@ -1,29 +1,25 @@
 {% extends 'mnp.html' %}
 
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/mnp_results.css') }}">
-{% endblock %}
 {% block results %}
-
 <div id="results">
-    <table border="1px">
-        <thead>
-            <tr>
-                <th>Broj</th>
-                <th>Operator</th>
-                <th>Status</th>
-            </tr>
-        </thead>
+    <table>
         <tbody>
         {% for res in results %}
+        {% if res.Success == True %}
             <tr>
-                <td>{{ res["Broj"] }}</td>
-                <td>{{ res["Operator"] }}</td>
-                <td>{{ res["Status"] }}</td>
+                <td>{{ res.Broj }}</td>
+                <td>{{ res.Operator }}</td>
+                <td>{{ res.Status }}</td>
             </tr>
+        {% else %}
+            <tr>
+                <td></td>
+                <td>{{ res.Reason }}</td>
+                <td></td>
+            </tr>
+        {% endif %}
         {% endfor %}
         </tbody>
     </table>
 </div>
-{% endblock %}
+{% endblock%}
