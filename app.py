@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, make_response, jsonify
+from urllib import response
+from flask import Flask, render_template, request, make_response, jsonify, send_file
 import hakom
-import json
+import pandas, io, json
 from flask_sslify import SSLify
 
 app = Flask(__name__)
-# sslify = SSLify(app)
+#sslify = SSLify(app)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -25,9 +26,22 @@ def hackom():
         return render_template("mnp.html")
 
 
+@app.route("/json_to_xlsx", methods=["POST"])
+def json_to_xlsx():
+    if request.method == "POST":
+        mnp_results = request.form.get("mnp_results")
+        df = pandas.DataFrame.from_dict(json.loads(mnp_results))
+        out = io.BytesIO()
+        df.to_excel(out, index=False, sheet_name='Sheet1')
+        out.seek(0)
+        return send_file(out, as_attachment=True, download_name="mnp_results.xlsx")
+  
+
+         
+
 if __name__ == "__main__":
     app.run(
         host='0.0.0.0',
-        port=5000,
+        port=8080,
         debug=False
     )

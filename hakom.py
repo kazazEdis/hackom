@@ -1,7 +1,9 @@
+import io
 import requests
 from requests.exceptions import ConnectionError
 from bs4 import BeautifulSoup
 import json
+import pandas
 from time import sleep
 import tensorflow as tf
 import model as m
@@ -94,38 +96,41 @@ def operator(phone_number):
         return [{"Success": False, "Reason": e}]
 
 
-def batch_operator(phone_numbers: str):
-    phone_numbers = json.loads("[" + phone_numbers + "]")
-    preneseno = open('preneseno.json', "r")
-    preneseno = json.load(preneseno)
-    telemach = "Telemach Hrvatska d.o.o."
-    statuses = {
-        "completed": "Broj je prenesen",
-        "gave_up": "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa",
-        "in_process": "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa",
-        "accepted": "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa",
-        "not_in_transfer": "Broj nije u postupku prijenosa"
-    }
+def batch_operator(phone_numbers: str):     
+    phone_numbers = phone_numbers.split(",")
+    # preneseno = open('preneseno.json', "r")
+    # preneseno = json.load(preneseno)
+    # telemach = "Telemach Hrvatska d.o.o."
+    # statuses = {
+    #     "completed": "Broj je prenesen",
+    #     "gave_up": "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa",
+    #     "in_process": "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa",
+    #     "accepted": "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa",
+    #     "not_in_transfer": "Broj nije u postupku prijenosa"
+    # }
 
-    results = []
-    for i in phone_numbers:
-        if i not in preneseno:
-            res = operator(i)[0]
-            res_broj = res.get("Broj")
-            res_status = res.get("Status")
-            res_operator = res.get("Operator")
-            if res_operator != None:
-                if res_operator != telemach or res_status == statuses.get("gave_up"):
-                    results.append(res)
+    # results = []
+    # for i in phone_numbers:
+    #     if i not in preneseno:
+    #         i=i.lstrip(" ").lstrip("385")
+    #         res = operator(i)[0]
+    #         res_broj = res.get("Broj")
+    #         res_status = res.get("Status")
+    #         res_operator = res.get("Operator")
+            
+    #         if res_operator != None:
+    #             if res_operator != telemach or res_status == statuses.get("gave_up"):
+    #                 results.append(res)
 
-                else:
-                    preneseno.append(int(res_broj))
+    #             else:
+    #                 preneseno.append(int(res_broj))
 
-            elif res_operator == None:
-                results.append(res)
+    #         elif res_operator == None:
+    #             results.append(res)
 
 
-    with open("preneseno.json", "w") as f:
-        json.dump(preneseno, f)
+    # with open("preneseno.json", "w") as f:
+    #     json.dump(preneseno)
 
-    return results
+    # return results
+    return [operator(i.lstrip(" ").lstrip("385"))[0] for i in phone_numbers]

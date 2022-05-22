@@ -1,4 +1,5 @@
 #searchBar {
+  display: inline-flex;
   font-size: 120%;
   height: 3rem;
   width: 50%;

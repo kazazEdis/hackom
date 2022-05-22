@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}MNP{% endblock %}
+{% block title %}Hunter{% endblock %}
 {% block head %}
 {{ super() }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/mnp.css') }}">
-<script defer src="{{ url_for('static', filename='js/mnp.js') }}"></script>
 {% endblock %}
 {% block content %}
 {{ super() }}

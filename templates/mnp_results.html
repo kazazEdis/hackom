@@ -2,6 +2,15 @@
 
 {% block results %}
 <div id="results">
+    <form hidden method="post" action="/json_to_xlsx">
+        <input hidden id="mnp_results" type="hidden" name="mnp_results">
+        <script>
+            document.getElementById('mnp_results').value = JSON.stringify({{results|tojson|safe}});
+        </script>
+        <button id="download" type="submit"  style="margin-left: 50%;">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAABAElEQVRIid3VPUoEQRCG4cfF0MhYTAy9woKBBiMGxiaew0TY0BN4AAOPYKThbqAIXkFHU28gY9ID7doz3TPsBvpBMQVVX739B8N/VIUaTUHMxgDeCoePhrTG0r4GV+sGDIKMBSQhGx3Grlqqr3fmZmZIn5YXkAROovwE70uGIZFV6dsfBIq32RYrTEO+wF3oi81neMGp3xfbeXftCh6xE+IpGtzWv7CFD1zmdpACNNgPEZvi+g32cDsGMMduiHkC8IkLvGI7B0jdwSGOQn6Ph0TfOZ5xgOuemT+0llcU63hFkKyKG0t8k0TjSpUC1OE75mhqBaoM/6s1wVMN2Nwf0TcsgcNoWhSXQQAAAABJRU5ErkJggg=="/>
+        </button>
+    </form>
     <table>
         <tbody>
         {% for res in results %}
