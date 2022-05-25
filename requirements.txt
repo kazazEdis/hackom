@@ -46,7 +46,6 @@ soupsieve==2.3.2.post1
 tensorboard==2.9.0
 tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
-tensorflow @ file:///tmp/tensorflow_pkg/tensorflow-2.10.0-cp39-cp39-linux_x86_64.whl
 tensorflow-cpu==2.8.0
 tensorflow-estimator==2.9.0
 tensorflow-io-gcs-filesystem==0.25.0
