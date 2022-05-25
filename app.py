@@ -31,7 +31,7 @@ def json_to_xlsx():
     if request.method == "POST":
         mnp_results = request.form.get("mnp_results")
         df = pandas.DataFrame.from_dict(json.loads(mnp_results))
-        df.drop('Success', axis=1, inplace=True)
+       	df.drop('Success', axis=1, inplace=True)
         out = io.BytesIO()
         df.to_excel(out, index=False, sheet_name='Sheet1')
         out.seek(0)

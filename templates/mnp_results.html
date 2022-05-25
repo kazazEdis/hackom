@@ -3,10 +3,10 @@
 
 {% block results %}
 <div id="results">
-    <a onclick=json_to_xlsx class="fa-solid fa-file-export" id="export"></a>
+    <a class="fa-solid fa-file-export" id="export"></a>
     <script>
         a = document.querySelector("#export")
-        fetch("http://192.168.1.65:8080/json_to_xlsx", {
+        fetch("/json_to_xlsx", {
             "headers": {
                 "content-type": "application/x-www-form-urlencoded"
             },
