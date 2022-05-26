@@ -3,18 +3,19 @@
 
 {% block results %}
 <div id="results">
-    <a class="fa-solid fa-file-export" id="export"></a>
-    <script>
-        a = document.querySelector("#export")
-        fetch("/json_to_xlsx", {
-            "headers": {
-                "content-type": "application/x-www-form-urlencoded"
-            },
-            "body": "mnp_results=" + JSON.stringify({{results|tojson}}),
-            "method": "POST"
-            }).then(data=>data.blob()).then(blob=>a.href=window.URL.createObjectURL(blob)).then(a.download="results.xlsx");
-        
-    </script>
+    <div id="exportButton">
+        <a class="fa-solid fa-file-export" id="export"></a>
+        <script>
+            a = document.querySelector("#export")
+            fetch("/json_to_xlsx", {
+                "headers": {
+                    "content-type": "application/x-www-form-urlencoded"
+                },
+                "body": "mnp_results=" + JSON.stringify({{results|tojson}}),
+                "method": "POST"
+                }).then(data=>data.blob()).then(blob=>a.href=window.URL.createObjectURL(blob)).then(a.download="results.xlsx");
+        </script>
+    </div>
     <table>
         <tbody>
         {% for res in results %}
