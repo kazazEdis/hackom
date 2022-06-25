@@ -1,4 +1,4 @@
-FROM python:3.9ls
+FROM python:3.9
 
 WORKDIR /app
 
