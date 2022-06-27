@@ -1,48 +1,56 @@
-from urllib import response
-from flask import Flask, render_template, request, make_response, jsonify, send_file
+""" Entrypoint file """
+import io
+import json
+
+import pandas
+from flask import Flask, render_template, request, send_file
+# from flask_sslify import SSLify
+
 import hakom
-import pandas, io, json
-from flask_sslify import SSLify
 
-app = Flask(__name__)
-#sslify = SSLify(app)
+APP = Flask(__name__)
+#sslify = SSLify(APP)
 
 
-@app.route("/", methods=["GET", "POST"])
+
+@APP.route("/", methods=["GET", "POST"])
 def hackom():
+    """ Get the data from the form and send it to the hakom module """
     if request.method == "POST":
         msisdn = request.form.get("msisdn")
 
         if len(msisdn) == 0:
-            return render_template("mnp_results.html", results=[{"Success": False, "Reason": "Please enter MSISDN!"}])
+            return render_template("mnp_results.html", results=[
+                {"Success": False, "Reason": "Please enter MSISDN!"}
+                ])
 
-        elif "," in msisdn:
+        if "," in msisdn:
             return render_template("mnp_results.html", results=hakom.batch_operator(msisdn))
 
-        else:
-            return render_template("mnp_results.html", results=hakom.operator(msisdn))
+        return render_template("mnp_results.html", results=hakom.operator(msisdn))
 
-    else:
+    if request.method == "GET":
         return render_template("mnp.html")
 
 
-@app.route("/json_to_xlsx", methods=["POST"])
+@APP.route("/json_to_xlsx", methods=["POST"])
 def json_to_xlsx():
+    """ Convert the json data to an xlsx file """
     if request.method == "POST":
         mnp_results = request.form.get("mnp_results")
-        df = pandas.DataFrame.from_dict(json.loads(mnp_results))
-       	df.drop('Success', axis=1, inplace=True)
+        data_frame = pandas.DataFrame.from_dict(json.loads(mnp_results))
+        data_frame.drop("Success", axis=1, inplace=True)
         out = io.BytesIO()
-        df.to_excel(out, index=False, sheet_name='Sheet1')
+        data_frame.to_excel(out, index=False, sheet_name="Sheet1")
         out.seek(0)
         return send_file(out, as_attachment=True, download_name="mnp_results.xlsx")
-  
 
-         
+
+
 
 if __name__ == "__main__":
-    app.run(
-        host='0.0.0.0',
+    APP.run(
+        host="0.0.0.0",
         port=8080,
         debug=False
     )

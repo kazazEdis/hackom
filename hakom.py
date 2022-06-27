@@ -1,18 +1,16 @@
-import io
-import requests
-from requests.exceptions import ConnectionError
-from bs4 import BeautifulSoup
-import json
-import pandas
+"""Get results from hakom.hr"""
 from time import sleep
+import requests
+from bs4 import BeautifulSoup
 import tensorflow as tf
 import model as m
 
-model, prediction_model = m.build_model()
-model.load_weights('my_model.hdf5')
+MODEL, PREDICTION_MODEL = m.build_model()
+MODEL.load_weights('my_model.hdf5')
 
 
 def ocr():
+    """OCR the captcha"""
     dataset = tf.data.Dataset.from_tensor_slices((['test.jpeg'], None))
     dataset = (
         dataset.map(m.encode_single_sample,
@@ -21,13 +19,14 @@ def ocr():
         .prefetch(buffer_size=tf.data.AUTOTUNE)
     )
 
-    out = prediction_model.predict(dataset)
+    out = PREDICTION_MODEL.predict(dataset)
     out = m.decode_batch_predictions(out, 6)  # max length = 6
 
     return out[0]
 
 
 def reformat_phone_number(phone_number: str):
+    """Reformat phone number"""
     phone_number = str(phone_number)
     while phone_number[0] == "0":
         phone_number = phone_number.lstrip("0")
@@ -39,6 +38,7 @@ def reformat_phone_number(phone_number: str):
 
 
 def operator(phone_number):
+    """Check a single phone number"""
     phone_number = reformat_phone_number(str(phone_number))
 
     try:
@@ -52,6 +52,7 @@ def operator(phone_number):
         url = "https://app.hakom.hr/default.aspx?id=62&iframe=yes"
         captcha = ocr()
         payload = f'brojTel={phone_number}&cp={captcha}&iframe=yes&sto=prijenosBroja'
+        # pylint: disable=line-too-long
         headers = {
             'sec-ch-ua': '"Google Chrome";v="95", "Chromium";v="95", ";Not A Brand";v="99"',
             'sec-ch-ua-mobile': '?0',
@@ -85,52 +86,15 @@ def operator(phone_number):
             if status == bad_captcha:
                 return operator(phone_number)
 
-            elif status == timeout:
+            if status == timeout:
                 sleep(60)
                 return operator(phone_number)
 
-    except ConnectionError:
+    except requests.exceptions.ConnectionError:
         return [{"Success": False, "Reason": "ConnectionError. Are you online?"}]
 
-    except Exception as e:
-        return [{"Success": False, "Reason": e}]
 
-
-def batch_operator(phone_numbers: str):     
+def batch_operator(phone_numbers: str):
+    """Check multiple phone numbers at once"""
     phone_numbers = phone_numbers.split(",")
-    # preneseno = open('preneseno.json', "r")
-    # preneseno = json.load(preneseno)
-    # telemach = "Telemach Hrvatska d.o.o."
-    # statuses = {
-    #     "completed": "Broj je prenesen",
-    #     "gave_up": "Zahtjev za prijenos broja je napušten, broj nije u postupku prijenosa",
-    #     "in_process": "Zahtjev za prijenos broja je otvoren, broj je u postupku prijenosa",
-    #     "accepted": "Zahtjev za prijenos broja je prihvaćen, broj je u postupku prijenosa",
-    #     "not_in_transfer": "Broj nije u postupku prijenosa"
-    # }
-
-    # results = []
-    # for i in phone_numbers:
-    #     if i not in preneseno:
-    #         i=i.lstrip(" ").lstrip("385")
-    #         res = operator(i)[0]
-    #         res_broj = res.get("Broj")
-    #         res_status = res.get("Status")
-    #         res_operator = res.get("Operator")
-            
-    #         if res_operator != None:
-    #             if res_operator != telemach or res_status == statuses.get("gave_up"):
-    #                 results.append(res)
-
-    #             else:
-    #                 preneseno.append(int(res_broj))
-
-    #         elif res_operator == None:
-    #             results.append(res)
-
-
-    # with open("preneseno.json", "w") as f:
-    #     json.dump(preneseno)
-
-    # return results
     return [operator(i.lstrip(" ").lstrip("385"))[0] for i in phone_numbers]
