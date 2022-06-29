@@ -78,7 +78,7 @@ def operator(phone_number):
             results = [{"Success": True, "Operator": results[0].text,
                         "Broj": results[1].text, "Status": results[2].text}]
             return results
-
+        # pylint: disable=broad-except
         except Exception:
             status = soup.find(id="brojRez").text
             timeout = "Molimo pokušajte ponovo za 1 minutu..."

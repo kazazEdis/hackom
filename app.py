@@ -29,21 +29,19 @@ def hackom():
 
         return render_template("mnp_results.html", results=hakom.operator(msisdn))
 
-    if request.method == "GET":
-        return render_template("mnp.html")
+    return render_template("mnp.html")
 
 
 @APP.route("/json_to_xlsx", methods=["POST"])
 def json_to_xlsx():
     """ Convert the json data to an xlsx file """
-    if request.method == "POST":
-        mnp_results = request.form.get("mnp_results")
-        data_frame = pandas.DataFrame.from_dict(json.loads(mnp_results))
-        data_frame.drop("Success", axis=1, inplace=True)
-        out = io.BytesIO()
-        data_frame.to_excel(out, index=False, sheet_name="Sheet1")
-        out.seek(0)
-        return send_file(out, as_attachment=True, download_name="mnp_results.xlsx")
+    mnp_results = request.form.get("mnp_results")
+    data_frame = pandas.DataFrame.from_dict(json.loads(mnp_results))
+    data_frame.drop("Success", axis=1, inplace=True)
+    out = io.BytesIO()
+    data_frame.to_excel(out, index=False, sheet_name="Sheet1")
+    out.seek(0)
+    return send_file(out, as_attachment=True, download_name="mnp_results.xlsx")
 
 
 
