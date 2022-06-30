@@ -41,7 +41,7 @@ def json_to_xlsx():
     out = io.BytesIO()
     data_frame.to_excel(out, index=False, sheet_name="Sheet1")
     out.seek(0)
-    return send_file(out, as_attachment=True, download_name="mnp_results.xlsx")
+    return send_file(out, as_attachment=True, attachment_filename="mnp_results.xlsx")
 
 
 
